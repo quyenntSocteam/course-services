@@ -13,8 +13,8 @@ let dataDefaul = {
 
 const CategoryCourse = new Schema(
     {
-        cate_id : {type: Number, required: true},
-        categoryName: { type: String, required: true },
+        cate_id : {type: Number},
+        categoryName: { type: String},
         description: { type: String },
         active: { type: Boolean },
     },
@@ -30,4 +30,4 @@ CategoryCourse.plugin(mongooseDelete, {
     overrideMethods: 'all',
 });
 
-module.exports = mongoose.model('CategoryCourse', CategoryCourse);
+module.exports = mongoose.model('category', CategoryCourse);

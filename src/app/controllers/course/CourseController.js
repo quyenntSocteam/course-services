@@ -13,6 +13,19 @@ class CourseController {
             .catch(next);
     }
 
+    // [GET] /courses/api/getcoursebyid/:id
+    getCourseByID(req, res, next) {
+        Course.findOne({ 
+            _id: req.params.id
+          })
+        .then((courses) =>
+            res.json({
+                data: courses
+            })
+        )
+        .catch(next);
+    }
+
     // [GET] /courses/create
     create(req, res, next) {
         Course.find({})
