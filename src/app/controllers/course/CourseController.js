@@ -2,11 +2,13 @@ const Course = require('../../models/Course');
 const { mongooseToObject } = require('../../../until/mongoose');
 
 class CourseController {
-    // [GET] /courses/:slug
-    show(req, res, next) {
-        Course.findOne({ slug: req.params.slug })
-            .then((course) =>
-                res.json('text 1')
+    // [GET] /courses/api/getallcourse
+    getAllCourse(req, res, next) {
+        Course.find({ })
+            .then((courses) =>
+                res.json({
+                    data: courses
+                })
             )
             .catch(next);
     }
@@ -15,7 +17,9 @@ class CourseController {
     create(req, res, next) {
         Course.find({})
             .then((course) =>
-                res.json(course)
+                res.json({
+                    data: mongooseToObject(course.name),
+                })
             )
             .catch(next);
     }
