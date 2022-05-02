@@ -6,7 +6,7 @@ class CourseController {
     show(req, res, next) {
         Course.findOne({ slug: req.params.slug })
             .then((course) =>
-                res.json('text')
+                res.json('text 1')
             )
             .catch(next);
     }
