@@ -1,8 +1,12 @@
+
+require('dotenv').config()
 const mongoose = require('mongoose');
+
+const url = process.env.DEVELOPMENT_DB_DSN;
 
 async function connect() {
     try {
-        await mongoose.connect('mongodb://localhost:27017/course-management', {
+        await mongoose.connect(url, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useCreateIndex: true,
@@ -14,3 +18,5 @@ async function connect() {
 }
 
 module.exports = { connect };
+
+

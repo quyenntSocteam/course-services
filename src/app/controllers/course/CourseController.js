@@ -4,7 +4,7 @@ const { mongooseToObject } = require('../../../until/mongoose');
 class CourseController {
     // [GET] /courses/api/getallcourse
     getAllCourse(req, res, next) {
-        Course.find({ })
+        Course.find({})
             .then((courses) =>
                 res.json({
                     data: courses
@@ -34,7 +34,11 @@ class CourseController {
             .then(() => res.json({
                 message: 'Course saved successfully'
             }))
-            .catch((error) => {})
+            .catch((error) => {
+                res.json({
+                    message: error
+                })
+            })
     }
 
     // [GET] /courses/create

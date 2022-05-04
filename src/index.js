@@ -1,3 +1,4 @@
+require('dotenv').config()
 const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
@@ -11,10 +12,10 @@ const SortMiddleware = require('./app/middlewares/SortMiddleware')
 
 const route = require('./routes');
 const db = require('./config/db');
-const { type } = require('os');
 
 // Connect to DB
 db.connect();
+
 
 const app = express();
 const port = 3131;
@@ -26,6 +27,8 @@ app.use(
         extended: true,
     }),
 );
+
+
 app.use(express.json());
 
 app.use(methodOverride('_method'));
