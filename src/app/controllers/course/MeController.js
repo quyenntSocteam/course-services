@@ -5,8 +5,6 @@ const moment = require('moment');
 class MeController {
     // [GET] /me/stored/courses
     storedCourses(req, res, next) {
-        res.json("text")
-        return;
         let courseQuery = Course.find({}); 
         // sort courses
         if(res.locals._sort.enabled) {
