@@ -7,7 +7,9 @@ const courseController = require('../../app/controllers/course/CourseController'
 router.get('/api/getallcourse', courseController.getAllCourse);
 router.get('/api/getcoursebyid/:id', courseController.getCourseByID);
 router.post('/api/createCourse', courseController.createCourse);
-router.get('/create', courseController.create);
+router.post('/api/createMultiCourse', courseController.createMultiCourse);
+router.get('/api/filters/cate_url=:id', courseController.filterCourse);
+router.get('/api/search', courseController.searchCourse);
 router.post('/store', courseController.store);
 router.get('/:id/edit', courseController.edit);
 router.post('/handle-form-action-trash', courseController.handleFormActionTrash);
