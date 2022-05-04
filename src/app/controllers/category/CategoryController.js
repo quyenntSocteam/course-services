@@ -7,7 +7,8 @@ class CategoryController {
         CategoryCourse.find({ })
         .then((category) =>
             res.json({
-                data: category
+                data: category,
+                message: 'is successfully'
             })
         )
         .catch(next);
