@@ -26,6 +26,17 @@ class CourseController {
         .catch(next);
     }
 
+      // [POST] /courses/api/createCourse
+      createCourse(req, res, next) {
+        const course = new Course(req.body);
+        course
+            .save()
+            .then(() => res.json({
+                message: 'Course saved successfully'
+            }))
+            .catch((error) => {})
+    }
+
     // [GET] /courses/create
     create(req, res, next) {
         Course.find({})
