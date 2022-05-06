@@ -21,6 +21,7 @@ let dataDefault = {
     videoId: 'ieqw222',
     level: 'advanced',
     slug: "nestjs-1",
+    active: true,
 }
 
 const Course = new Schema(
@@ -32,6 +33,7 @@ const Course = new Schema(
         videoId: { type: String, required: true },
         level: { type: String },
         slug: { type: String, slug: 'name', unique: true },
+        active: { type: Boolean, required: true}
     },
     {
         timestamps: true,

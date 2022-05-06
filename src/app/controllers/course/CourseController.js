@@ -125,14 +125,35 @@ class CourseController {
     }
 
 
-    // [POST] /courses/store
-    store(req, res, next) {
-        req.body.image = `https://img.youtube.com/vi/${req.body.videoId}/sddefault.jpg`;
-        const course = new Course(req.body);
-        course
-            .save()
-            .then(() => res.redirect('/me/stored/courses'))
-            .catch((error) => { });
+    // [POST] courses/api/deletecoursebyid/:id
+    deleteCoursebyId(req, res, next) {
+        try {
+            Course.findByIdAndDelete({ _id: req.params.id })
+                .then(() => {
+                    res.json({
+                        meassage: 'removed course isSuccess',
+                        isSuccess: true
+                    })
+                }).catch(err => {
+                    res.json({ message: err.message })
+                })
+        } catch (err) {
+            res.json({ message: err.message })
+        }
+    }
+
+    // [PATCH] courses/api/updatecoursebyid/:id
+    updateCoursebyId(req, res, next) {
+        Course.findByIdAndUpdate(req.params.id, {
+            $set: {
+                active: false,
+            }
+        }).then(() => res.json({
+            message: "edit is successfully",
+            isSuccess: true
+        })).catch(err => res.json({
+            message: err.message
+        }))
     }
 
     // [GET] /courses/:id/edit
