@@ -1,4 +1,4 @@
-const Course = require('../../models/Course');
+const Account = require('../../models/Acount');
 const { mongooseToObject } = require('../../../until/mongoose');
 
 class AccountController {
