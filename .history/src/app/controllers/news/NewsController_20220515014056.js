@@ -123,7 +123,7 @@ class NewsController {
             });
     }
 
-    //[DELETE] /news/api/deletenewbyid/:id
+    //[DELETE] /news/deletenewbyid/:id
 
     deleteNewbyId(req, res, next) {
         New.remove({ _id: req.params.id})

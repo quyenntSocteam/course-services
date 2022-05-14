@@ -126,17 +126,19 @@ class NewsController {
     //[DELETE] /news/api/deletenewbyid/:id
 
     deleteNewbyId(req, res, next) {
-        New.remove({ _id: req.params.id})
-        .then(() => res.json({
-            message: 'New removed successfully',
-            isSuccess: true,
-        }))
-        .catch((error) => {
-            res.json({
-                message: error,
-                isSuccess: false,
-            })
-        })
+        try {
+            New.remove({ _id: req.params.id })
+                .then(() => {
+                    res.json({
+                        meassage: 'removed new isSuccess',
+                        isSuccess: true
+                    })
+                }).catch(err => {
+                    res.json({ message: err.message })
+                })
+        } catch (err) {
+            res.json({ message: err.message })
+        }
     }
 }
 

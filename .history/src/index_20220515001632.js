@@ -31,21 +31,20 @@ app.use(
 
 app.use(express.json());
 
-//app.use(methodOverride('_method'));
-app.use(methodOverride());
-
-// custom middlewares
-app.use(SortMiddleware)
-
-// HTTP logger
-app.use(morgan('combined'));
-
 app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, HEAD, DELETE');
     res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, content-type, Accept');
   next();
   });
+
+//app.use(methodOverride('_method'));
+
+// custom middlewares
+app.use(SortMiddleware)
+
+// HTTP logger
+app.use(morgan('combined'));
 
 // Template engine
 app.engine(

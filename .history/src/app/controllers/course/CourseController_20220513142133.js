@@ -77,7 +77,7 @@ class CourseController {
     // [GET] /courses/api/filters/cate_url=:id 
     filterCourse(req, res, next) {
         Course.find({ cate_id: req.params.id })
-            .then((course) => res.json({
+            .then(() => res.json({
                 message: 'Course saved successfully',
                 isSuccess: true,
             }))
@@ -128,10 +128,10 @@ class CourseController {
     // [POST] courses/api/deletecoursebyid/:id
     deleteCoursebyId(req, res, next) {
         try {
-            Course.findByIdAndDelete({ _id: req.params.id })
+            New.findByIdAndDelete({ _id: req.params.id })
                 .then(() => {
                     res.json({
-                        meassage: 'removed course isSuccess',
+                        meassage: 'removed new isSuccess',
                         isSuccess: true
                     })
                 }).catch(err => {

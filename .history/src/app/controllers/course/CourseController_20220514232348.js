@@ -77,7 +77,7 @@ class CourseController {
     // [GET] /courses/api/filters/cate_url=:id 
     filterCourse(req, res, next) {
         Course.find({ cate_id: req.params.id })
-            .then((course) => res.json({
+            .then(() => res.json({
                 message: 'Course saved successfully',
                 isSuccess: true,
             }))

@@ -16,18 +16,10 @@ let dataDefaul = {
     userIdApprove: 31231,
 }
 
-const newTopic = {
-    Frond_end: 1,
-    Back_end: 2,
-    UX_UI: 3,
-    Others: 4,
-}
-
 const New = new Schema(
     {
         newTitle: { type: String, required: true },
         description:  { type: String, required: true },
-        topic_id: { type: Number, required: true},
         imageCover:  { type: String, required: true },
         position: { type: Number, required: true },
         active: { type: Boolean, required: true},

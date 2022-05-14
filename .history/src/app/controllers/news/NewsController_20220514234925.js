@@ -53,7 +53,7 @@ class NewsController {
             })
     }
 
-    // [POST] /news/api/createmultinew
+    // [POST] /news/api/createMultiNew
     createMultiNew(req, res, next) {
         let multiNew = req.body
         multiNew.map((item) => {
@@ -76,45 +76,10 @@ class NewsController {
     // [GET] /news/api/filters/cate_url=:topicid
     filterNew(req, res, next) {
         New.find({ topic_id: req.params.topicid })
-            .then((news) => res.json({
-                data: news,
+            .then(() => res.json({
+                message: 'New saved successfully',
                 isSuccess: true,
             }))
-            .catch((error) => {
-                res.json({
-                    message: error,
-                    isSuccess: false,
-                })
-            });
-    }
-
-    // [GET] /news/api/search?title=text
-    async searchNew(req, res, next) {
-        const { title } = req.query;
-        const rgx = (pattern) => new RegExp(`.*${pattern}.*`);
-        const searchRgx = rgx(title);
-
-        await New.find({
-            $or: [
-                { newTitle: { $regex: searchRgx, $options: "i" } },
-            ],
-        })
-            .limit(5)
-            .setOptions({ sanitizeFilter: true })
-            .then((news) => {
-                if (!Array.isArray(news) || !news.length) {
-                    res.json({
-                        data: 'isEmpty',
-                        isSuccess: true,
-                    })
-                } else {
-                    res.json({
-                        data: news,
-                        isSuccess: true,
-                    })
-                }
-            }
-            )
             .catch((error) => {
                 res.json({
                     message: error,
@@ -126,17 +91,19 @@ class NewsController {
     //[DELETE] /news/api/deletenewbyid/:id
 
     deleteNewbyId(req, res, next) {
-        New.remove({ _id: req.params.id})
-        .then(() => res.json({
-            message: 'New removed successfully',
-            isSuccess: true,
-        }))
-        .catch((error) => {
-            res.json({
-                message: error,
-                isSuccess: false,
-            })
-        })
+        try {
+            New.deleteOne({ _id: req.params.id })
+                .then(() => {
+                    res.json({
+                        meassage: 'removed new isSuccess',
+                        isSuccess: true
+                    })
+                }).catch(err => {
+                    res.json({ message: err.message })
+                })
+        } catch (err) {
+            res.json({ message: err.message })
+        }
     }
 }
 

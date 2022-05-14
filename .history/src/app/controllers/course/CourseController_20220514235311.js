@@ -78,7 +78,8 @@ class CourseController {
     filterCourse(req, res, next) {
         Course.find({ cate_id: req.params.id })
             .then((course) => res.json({
-                message: 'Course saved successfully',
+                //message: 'Course saved successfully',
+                data: course,
                 isSuccess: true,
             }))
             .catch((error) => {
