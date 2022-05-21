@@ -123,12 +123,28 @@ class NewsController {
             });
     }
 
-    //[DELETE] /news/api/deletenewbyid/:id
-
+    // [POST] news/api/deletenewbyid/:id
     deleteNewbyId(req, res, next) {
-        New.remove({ _id: req.params.id})
+        try {
+            New.findByIdAndDelete({ _id: req.params.id })
+                .then(() => {
+                    res.json({
+                        meassage: 'Removed new isSuccess',
+                        isSuccess: true
+                    })
+                }).catch(err => {
+                    res.json({ message: err.message })
+                })
+        } catch (err) {
+            res.json({ message: err.message })
+        }
+    }
+
+    // [POST] news/api/updatenewbyid/:id
+    updateNewbyId(req, res, next) {
+        New.updateOne({ _id: req.params.id }, req.body)
         .then(() => res.json({
-            message: 'New removed successfully',
+            message: 'Updated new successfully',
             isSuccess: true,
         }))
         .catch((error) => {

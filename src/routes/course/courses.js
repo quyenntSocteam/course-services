@@ -3,9 +3,9 @@ const router = express.Router();
 
 const courseController = require('../../app/controllers/course/CourseController');
 
-
 router.get('/api/getallcourse', courseController.getAllCourse);
 router.get('/api/getcoursebyid/:id', courseController.getCourseByID);
+router.post('/api/popupnewcourse/:userid', courseController.popupNewCourse);
 router.post('/api/createCourse', courseController.createCourse);
 router.post('/api/createMultiCourse', courseController.createMultiCourse);
 router.get('/api/filters/cate_url=:id', courseController.filterCourse);
