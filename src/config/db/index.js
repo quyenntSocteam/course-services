@@ -10,6 +10,7 @@ async function connect() {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useCreateIndex: true,
+            migrate: 'safe'
         });
         console.log('Connect successfully!!!');
     } catch (error) {
