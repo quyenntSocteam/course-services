@@ -1,5 +1,9 @@
 require('dotenv').config()
 const path = require('path');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo');
 const express = require('express');
 const morgan = require('morgan');
 const methodOverride = require('method-override');
@@ -7,6 +11,7 @@ const handlebars = require('express-handlebars');
 const hbtdate = require('handlebars-helper-formatdate')
 const hbs = require('hbs');
 const moment = require('moment');
+const auth = require('./lib/auth');
 
 const SortMiddleware = require('./app/middlewares/SortMiddleware')
 
@@ -27,6 +32,19 @@ app.use(
         extended: true,
     }),
 );
+
+app.use(cookieParser());
+app.use(session({
+    secret: 'very secret 12345',
+    resave: true,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: 'mongodb+srv://course-services:zaQ%401234@cluster0.jytcw.mongodb.net/course-services?retryWrites=true&w=majority' })
+  }));
+
+app.use(auth.initialize);
+app.use(auth.session);
+app.use(auth.setUser);
+
 
 
 app.use(express.json());

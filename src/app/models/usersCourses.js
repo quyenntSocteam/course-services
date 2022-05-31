@@ -30,5 +30,17 @@ let dataDefaul = {
         }
      ]
     },
+    notifications: [
+        {
+            course_id: 12,
+            nameCourse: "NestJS",
+            description: "How to learn about NestJS?",
+            image: "image/nestjs",
+            videoId: 'ieqw222',
+            level: 'advanced',
+            slug: "nestjs-1",
+            sendemail: true,
+        },
+    ],
     active: true,
 }

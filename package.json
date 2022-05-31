@@ -13,12 +13,17 @@
     "src/**/*.{js,json,scss}": "prettier --single-quote --trailing-comma all --tab-width 4 --write"
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
+    "chai-http": "^4.3.0",
     "connect-mongo": "^4.6.0",
+    "cookie-parser": "^1.4.6",
+    "crypto": "^1.0.1",
     "dotenv": "^16.0.0",
     "email-validator": "^2.0.4",
     "express": "^4.17.1",
     "express-handlebars": "^5.1.0",
     "express-session": "^1.17.2",
+    "express-validator": "^6.14.1",
     "handlebars-dateformat": "^1.1.2",
     "handlebars-helper-formatdate": "^1.0.0",
     "hbs": "^4.2.0",
@@ -27,7 +32,9 @@
     "mongodb": "^4.5.0",
     "mongoose": "^5.9.27",
     "mongoose-delete": "^0.5.2",
-    "mongoose-slug-generator": "^1.0.4"
+    "mongoose-slug-generator": "^1.0.4",
+    "passport": "^0.5.2",
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "chai": "^4.3.6",
@@ -39,6 +46,6 @@
     "nodemon": "^2.0.4",
     "prettier": "^2.0.5"
   },
-  "author": "",
+  "author": "quyenthanh2208@gmail.com",
   "license": "ISC"
 }
