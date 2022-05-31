@@ -45,52 +45,13 @@ class CourseController {
 
     // [POST] /courses/api/createCourse
     createCourse(req, res, next) {
-        const course = new Course(req.body.newCourse);
+        const course = new Course(req.body);
         course
             .save()
-            .then(() => {
-                let transporter = nodemailer.createTransport(
-                    {
-                        service: 'gmail',
-                        auth:{
-                            user: `${req.body.email.sender}`, //tinhmtp123@gmail.com
-                            pass: `${req.body.email.pass}`
-                        }
-                    }
-                );
-        
-                transporter.use('compile', hbs(
-                    {
-                        viewEngine: {
-                            extName: ".hbs",
-                            partialsDir: path.resolve('./src/resources/views/email'),
-                            defaultLayout: false,
-                        },
-                        viewPath: path.resolve('./src/resources/views/email'),
-                        extName: ".hbs",
-                    }
-                ));
-        
-                const mailOptions = {
-                    from: `"${req.body.email.nameSender}" <${req.body.email.sender}>`,
-                    to: `${req.body.email.recipient}`,
-                    subject: 'Welcome!',
-                    template: 'sendemail',
-                };
-        
-                transporter.sendMail(mailOptions, function(err){
-                    if(err){
-                        return res.json({
-                            message: err,
-                            isSuccess: false,
-                        })
-                    }
-                    return res.json({
-                        message: 'Course saved successfully and sent email to users successfully',
-                        isSuccess: true,
-                    })
-                });
-            })
+            .then(() => res.json({
+                message: 'Course saved successfully',
+                isSuccess: true,
+            }))
             .catch((error) => {
                 res.json({
                     message: error,
@@ -117,6 +78,64 @@ class CourseController {
                     })
                 })
         })
+    }
+
+    //[POST] courses/api/sendemail
+    sendEmail(req, res, next) {
+
+        
+
+        const data = req.body;
+
+        let transporter = nodemailer.createTransport(
+            {
+                service: 'gmail',
+                auth:{
+                    user: `${data.sender}`, //tinhmtp123@gmail.com
+                    pass: `${data.pass}`
+                }
+            }
+        );
+
+        transporter.use('compile', hbs(
+            {
+                viewEngine: {
+                    extName: ".hbs",
+                    partialsDir: path.resolve('./src/resources/views/email'),
+                    defaultLayout: false,
+                },
+                viewPath: path.resolve('./src/resources/views/email'),
+                extName: ".hbs",
+            }
+        ));
+
+        const mailOptions = {
+            from: `"${data.nameSender}" <${data.sender}>`,
+            to: `${data.recipient}`,
+            subject: 'Welcome!',
+            template: 'sendemail',
+            context: {
+                username: `${data.username}`,
+                courseDescription: `${data.courseDescription}`,
+                courseImage: `${data.courseImage}`,
+                courseName: `${data.courseName}`,
+            }
+        };
+
+
+        transporter.sendMail(mailOptions, function(err){
+            if(err){
+                return res.json({
+                    message: err,
+                    isSuccess: false,
+                })
+            }
+            
+            return res.json({
+                message: 'Sent email to users successfully',
+                isSuccess: true,
+            })
+        });
     }
 
     // [GET] courses/api/popupnewcourse/:userid
