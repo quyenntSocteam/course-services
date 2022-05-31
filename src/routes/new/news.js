@@ -10,7 +10,8 @@ router.post('/api/createnew', newController.createNew);
 router.post('/api/createmultinew', newController.createMultiNew);
 router.get('/api/search', newController.searchNew);
 router.get('/api/filters/cate_url=:topicid', newController.filterNew);
-router.delete('api/deletenewbyid/:id', newController.deleteNewbyId);
+router.post('/api/deletenewbyid/:id', newController.deleteNewbyId);
+router.post('/api/updatenewbyid/:id', newController.updateNewbyId);
 
 
 module.exports = router;

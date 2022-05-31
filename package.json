@@ -6,7 +6,7 @@
   "scripts": {
     "beautiful": "lint-staged",
     "start": "nodemon --inspect src/index.js",
-    "watch": "node-sass --watch src/resources/scss/ --output src/public/css/",
+    "watch": "node-sass --watch src/resources/scss/app.scss --output src/public/css/app.css",
     "test": "npx mocha --exit --recursive test/"
   },
   "lint-staged": {
@@ -21,7 +21,6 @@
     "dotenv": "^16.0.0",
     "email-validator": "^2.0.4",
     "express": "^4.17.1",
-    "express-handlebars": "^5.1.0",
     "express-session": "^1.17.2",
     "express-validator": "^6.14.1",
     "handlebars-dateformat": "^1.1.2",
@@ -35,15 +34,18 @@
     "mongoose-slug-generator": "^1.0.4",
     "passport": "^0.5.2",
     "passport-local": "^1.0.0"
+    "nodemailer": "^6.7.5",
+    "nodemailer-express-handlebars": "^5.0.0"
   },
   "devDependencies": {
     "chai": "^4.3.6",
+    "express-handlebars": "^5.3.5",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
     "mocha": "^10.0.0",
     "morgan": "^1.10.0",
     "node-sass": "^4.14.1",
-    "nodemon": "^2.0.4",
+    "nodemon": "^2.0.16",
     "prettier": "^2.0.5"
   },
   "author": "quyenthanh2208@gmail.com",

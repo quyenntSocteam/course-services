@@ -1,11 +1,15 @@
 const Course = require('../../models/Course');
+const Acount = require('../../models/Acount');
+const path = require('path');
+const nodemailer = require('nodemailer');
+var hbs = require('nodemailer-express-handlebars');
 const { mongooseToObject } = require('../../../until/mongoose');
 
 class CourseController {
     // [GET] /courses/api/getallcourse
     getAllCourse(req, res, next) {
         Course.find({})
-            .then((courses) =>
+            .then((courses) => 
                 res.json({
                     data: courses,
                     isSuccess: true,
@@ -18,6 +22,8 @@ class CourseController {
                 })
             });
     }
+    
+
 
     // [GET] /courses/api/getcoursebyid/:id
     getCourseByID(req, res, next) {
@@ -72,6 +78,85 @@ class CourseController {
                     })
                 })
         })
+    }
+
+    //[POST] courses/api/sendemail
+    sendEmail(req, res, next) {
+
+        
+
+        const data = req.body;
+
+        let transporter = nodemailer.createTransport(
+            {
+                service: 'gmail',
+                auth:{
+                    user: `${data.sender}`, //tinhmtp123@gmail.com
+                    pass: `${data.pass}`
+                }
+            }
+        );
+
+        transporter.use('compile', hbs(
+            {
+                viewEngine: {
+                    extName: ".hbs",
+                    partialsDir: path.resolve('./src/resources/views/email'),
+                    defaultLayout: false,
+                },
+                viewPath: path.resolve('./src/resources/views/email'),
+                extName: ".hbs",
+            }
+        ));
+
+        const mailOptions = {
+            from: `"${data.nameSender}" <${data.sender}>`,
+            to: `${data.recipient}`,
+            subject: 'Welcome!',
+            template: 'sendemail',
+            context: {
+                username: `${data.username}`,
+                courseDescription: `${data.courseDescription}`,
+                courseImage: `${data.courseImage}`,
+                courseName: `${data.courseName}`,
+            }
+        };
+
+
+        transporter.sendMail(mailOptions, function(err){
+            if(err){
+                return res.json({
+                    message: err,
+                    isSuccess: false,
+                })
+            }
+            
+            return res.json({
+                message: 'Sent email to users successfully',
+                isSuccess: true,
+            })
+        });
+    }
+
+    // [GET] courses/api/popupnewcourse/:userid
+    popupNewCourse(req, res, next) {
+        Promise.all([
+            Acount.find({_id: req.params.userid}), 
+            Course.find().sort({ createdAt: -1 }).limit(2)
+        ])
+            .then(([acount, course]) => res.json({
+                title: `Welcom ${acount[0].username} to Course Developer from zero to hero`,
+                description: `We have ${course.length} courses just launched.`,
+                newCourses: course,
+                isSuccess: true,
+                acount
+            }))
+            .catch((error) => {
+                res.json({
+                    message: error,
+                    isSuccess: false,
+                })
+            })
     }
 
     // [GET] /courses/api/filters/cate_url=:id 
@@ -225,6 +310,8 @@ class CourseController {
 
         }
     }
+
+    
 }
 
 module.exports = new CourseController();
