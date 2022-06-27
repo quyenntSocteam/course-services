@@ -22,6 +22,7 @@ let dataDefault = {
     level: 'advanced',
     slug: "nestjs-1",
     active: true,
+    email_marketing: true,
 }
 
 const Course = new Schema(

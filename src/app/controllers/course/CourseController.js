@@ -1,4 +1,6 @@
 const Course = require('../../models/Course');
+const Rating = require('../../models/Rating');
+const RatingService = require('../../../services/RatingServices');
 const Acount = require('../../models/Acount');
 const path = require('path');
 const nodemailer = require('nodemailer');
@@ -30,10 +32,13 @@ class CourseController {
         Course.findOne({
             _id: req.params.id
         })
-            .then((courses) =>
+            .then((courses) =>{
+                RatingService.updateViewCourseRating(req.params.id);
+                // RatingService.updateStarCourseRating(req.params.id, 1);
                 res.json({
                     data: courses
                 })
+            }
             )
             .catch((error) => {
                 res.json({
@@ -48,10 +53,13 @@ class CourseController {
         const course = new Course(req.body);
         course
             .save()
-            .then(() => res.json({
-                message: 'Course saved successfully',
-                isSuccess: true,
-            }))
+            .then(() => {
+                res.json({
+                    message: 'Course saved successfully',
+                    isSuccess: true,
+                })
+                RatingService.createCourseRating(course.id);
+            })
             .catch((error) => {
                 res.json({
                     message: error,
@@ -67,10 +75,13 @@ class CourseController {
             const course = new Course(item);
             course
                 .save()
-                .then(() => res.json({
-                    message: 'Course saved successfully',
-                    isSuccess: true,
-                }))
+                .then(() => {
+                    RatingService.createCourseRating(course.id);
+                    res.json({
+                        message: 'Course saved successfully',
+                        isSuccess: true,
+                    })
+                })
                 .catch((error) => {
                     res.json({
                         message: error,
@@ -82,8 +93,6 @@ class CourseController {
 
     //[POST] courses/api/sendemail
     sendEmail(req, res, next) {
-
-        
 
         const data = req.body;
 
