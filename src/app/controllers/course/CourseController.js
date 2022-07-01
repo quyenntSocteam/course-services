@@ -29,17 +29,17 @@ class CourseController {
 
     // [GET] /courses/api/getcoursebyid/:id
     getCourseByID(req, res, next) {
-        Course.findOne({
-            _id: req.params.id
-        })
-            .then((courses) =>{
-                RatingService.updateViewCourseRating(req.params.id);
-                // RatingService.updateStarCourseRating(req.params.id, 1);
+        RatingService.updateViewCourseRating(req.params.id);
+        Promise.all([
+            Course.findOne({_id: req.params.id}),
+            Rating.findOne({course_id: req.params.id})
+        ])
+            .then(([course, rating]) =>{
                 res.json({
-                    data: courses
+                    course: course,
+                    rating: rating
                 })
-            }
-            )
+            })
             .catch((error) => {
                 res.json({
                     message: error,
