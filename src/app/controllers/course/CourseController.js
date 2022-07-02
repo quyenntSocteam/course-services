@@ -1,4 +1,6 @@
 const Course = require('../../models/Course');
+const Rating = require('../../models/Rating');
+const RatingService = require('../../../services/RatingServices');
 const Acount = require('../../models/Acount');
 const path = require('path');
 const nodemailer = require('nodemailer');
@@ -27,14 +29,17 @@ class CourseController {
 
     // [GET] /courses/api/getcoursebyid/:id
     getCourseByID(req, res, next) {
-        Course.findOne({
-            _id: req.params.id
-        })
-            .then((courses) =>
+        RatingService.updateViewCourseRating(req.params.id);
+        Promise.all([
+            Course.findOne({_id: req.params.id}),
+            Rating.findOne({course_id: req.params.id})
+        ])
+            .then(([course, rating]) =>{
                 res.json({
-                    data: courses
+                    course: course,
+                    rating: rating
                 })
-            )
+            })
             .catch((error) => {
                 res.json({
                     message: error,
@@ -48,10 +53,13 @@ class CourseController {
         const course = new Course(req.body);
         course
             .save()
-            .then(() => res.json({
-                message: 'Course saved successfully',
-                isSuccess: true,
-            }))
+            .then(() => {
+                res.json({
+                    message: 'Course saved successfully',
+                    isSuccess: true,
+                })
+                RatingService.createCourseRating(course.id);
+            })
             .catch((error) => {
                 res.json({
                     message: error,
@@ -67,10 +75,13 @@ class CourseController {
             const course = new Course(item);
             course
                 .save()
-                .then(() => res.json({
-                    message: 'Course saved successfully',
-                    isSuccess: true,
-                }))
+                .then(() => {
+                    RatingService.createCourseRating(course.id);
+                    res.json({
+                        message: 'Course saved successfully',
+                        isSuccess: true,
+                    })
+                })
                 .catch((error) => {
                     res.json({
                         message: error,
@@ -82,8 +93,6 @@ class CourseController {
 
     //[POST] courses/api/sendemail
     sendEmail(req, res, next) {
-
-        
 
         const data = req.body;
 
