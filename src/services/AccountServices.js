@@ -75,10 +75,10 @@ class AccountServices {
    * @returns the token object if found
    */
   static async verifyPasswordResetToken(userId, token) {
-    // return PasswordResetModel.findOne({
-    //   token,
-    //   userId,
-    // }).exec();
+    return PasswordResetModel.findOne({
+      token,
+      userId,
+    }).exec();
   }
 
   /**
