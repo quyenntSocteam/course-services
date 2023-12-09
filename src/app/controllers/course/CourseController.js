@@ -1,33 +1,253 @@
 const Course = require('../../models/Course');
+const Rating = require('../../models/Rating');
+const RatingService = require('../../../services/RatingServices');
+const Acount = require('../../models/Acount');
+const path = require('path');
+const nodemailer = require('nodemailer');
+var hbs = require('nodemailer-express-handlebars');
 const { mongooseToObject } = require('../../../until/mongoose');
 
 class CourseController {
-    // [GET] /courses/:slug
-    show(req, res, next) {
-        Course.findOne({ slug: req.params.slug })
-            .then((course) =>
-                res.json('text 1')
-            )
-            .catch(next);
-    }
-
-    // [GET] /courses/create
-    create(req, res, next) {
+    // [GET] /courses/api/getallcourse
+    getAllCourse(req, res, next) {
         Course.find({})
-            .then((course) =>
-                res.json(course)
+            .then((courses) => 
+                res.json({
+                    data: courses,
+                    isSuccess: true,
+                })
             )
-            .catch(next);
+            .catch((error) => {
+                res.json({
+                    message: error,
+                    isSuccess: false,
+                })
+            });
+    }
+    
+
+
+    // [GET] /courses/api/getcoursebyid/:id
+    getCourseByID(req, res, next) {
+        RatingService.updateViewCourseRating(req.params.id);
+        Promise.all([
+            Course.findOne({_id: req.params.id}),
+            Rating.findOne({course_id: req.params.id})
+        ])
+            .then(([course, rating]) =>{
+                res.json({
+                    course: course,
+                    rating: rating
+                })
+            })
+            .catch((error) => {
+                res.json({
+                    message: error,
+                    isSuccess: false,
+                })
+            });
     }
 
-    // [POST] /courses/store
-    store(req, res, next) {
-        req.body.image = `https://img.youtube.com/vi/${req.body.videoId}/sddefault.jpg`;
+    // [POST] /courses/api/createCourse
+    createCourse(req, res, next) {
         const course = new Course(req.body);
         course
             .save()
-            .then(() => res.redirect('/me/stored/courses'))
-            .catch((error) => {});
+            .then(() => {
+                res.json({
+                    message: 'Course saved successfully',
+                    isSuccess: true,
+                })
+                RatingService.createCourseRating(course.id);
+            })
+            .catch((error) => {
+                res.json({
+                    message: error,
+                    isSuccess: false,
+                })
+            })
+    }
+
+    // [POST] /courses/api/createMultiCourse
+    createMultiCourse(req, res, next) {
+        let multiCourse = req.body
+        multiCourse.map((item) => {
+            const course = new Course(item);
+            course
+                .save()
+                .then(() => {
+                    RatingService.createCourseRating(course.id);
+                    res.json({
+                        message: 'Course saved successfully',
+                        isSuccess: true,
+                    })
+                })
+                .catch((error) => {
+                    res.json({
+                        message: error,
+                        isSuccess: false,
+                    })
+                })
+        })
+    }
+
+    //[POST] courses/api/sendemail
+    sendEmail(req, res, next) {
+
+        const data = req.body;
+
+        let transporter = nodemailer.createTransport(
+            {
+                service: 'gmail',
+                auth:{
+                    user: `${data.sender}`, //tinhmtp123@gmail.com
+                    pass: `${data.pass}`
+                }
+            }
+        );
+
+        transporter.use('compile', hbs(
+            {
+                viewEngine: {
+                    extName: ".hbs",
+                    partialsDir: path.resolve('./src/resources/views/email'),
+                    defaultLayout: false,
+                },
+                viewPath: path.resolve('./src/resources/views/email'),
+                extName: ".hbs",
+            }
+        ));
+
+        const mailOptions = {
+            from: `"${data.nameSender}" <${data.sender}>`,
+            to: `${data.recipient}`,
+            subject: 'Welcome!',
+            template: 'sendemail',
+            context: {
+                username: `${data.username}`,
+                courseDescription: `${data.courseDescription}`,
+                courseImage: `${data.courseImage}`,
+                courseName: `${data.courseName}`,
+            }
+        };
+
+
+        transporter.sendMail(mailOptions, function(err){
+            if(err){
+                return res.json({
+                    message: err,
+                    isSuccess: false,
+                })
+            }
+            
+            return res.json({
+                message: 'Sent email to users successfully',
+                isSuccess: true,
+            })
+        });
+    }
+
+    // [GET] courses/api/popupnewcourse/:userid
+    popupNewCourse(req, res, next) {
+        Promise.all([
+            Acount.find({_id: req.params.userid}), 
+            Course.find().sort({ createdAt: -1 }).limit(2)
+        ])
+            .then(([acount, course]) => res.json({
+                title: `Welcom ${acount[0].username} to Course Developer from zero to hero`,
+                description: `We have ${course.length} courses just launched.`,
+                newCourses: course,
+                isSuccess: true,
+                acount
+            }))
+            .catch((error) => {
+                res.json({
+                    message: error,
+                    isSuccess: false,
+                })
+            })
+    }
+
+    // [GET] /courses/api/filters/cate_url=:id 
+    filterCourse(req, res, next) {
+        Course.find({ cate_id: req.params.id })
+            .then(() => res.json({
+                message: 'Course saved successfully',
+                isSuccess: true,
+            }))
+            .catch((error) => {
+                res.json({
+                    message: error,
+                    isSuccess: false,
+                })
+            });
+    }
+
+    // [GET] /courses/api/search?name=text
+    async searchCourse(req, res, next) {
+        const { name } = req.query;
+        const rgx = (pattern) => new RegExp(`.*${pattern}.*`);
+        const searchRgx = rgx(name);
+
+        await Course.find({
+            $or: [
+                { name: { $regex: searchRgx, $options: "i" } },
+            ],
+        })
+            .limit(5)
+            .setOptions({ sanitizeFilter: true })
+            .then((courses) => {
+                if (!Array.isArray(courses) || !courses.length) {
+                    res.json({
+                        data: 'isEmpty',
+                        isSuccess: true,
+                    })
+                } else {
+                    res.json({
+                        data: courses,
+                        isSuccess: true,
+                    })
+                }
+            }
+            )
+            .catch((error) => {
+                res.json({
+                    message: error,
+                    isSuccess: false,
+                })
+            });
+    }
+
+
+    // [POST] courses/api/deletecoursebyid/:id
+    deleteCoursebyId(req, res, next) {
+        try {
+            Course.findByIdAndDelete({ _id: req.params.id })
+                .then(() => {
+                    res.json({
+                        meassage: 'removed course isSuccess',
+                        isSuccess: true
+                    })
+                }).catch(err => {
+                    res.json({ message: err.message })
+                })
+        } catch (err) {
+            res.json({ message: err.message })
+        }
+    }
+
+    // [PATCH] courses/api/updatecoursebyid/:id
+    updateCoursebyId(req, res, next) {
+        Course.findByIdAndUpdate(req.params.id, {
+            $set: {
+                active: false,
+            }
+        }).then(() => res.json({
+            message: "edit is successfully",
+            isSuccess: true
+        })).catch(err => res.json({
+            message: err.message
+        }))
     }
 
     // [GET] /courses/:id/edit
@@ -68,37 +288,39 @@ class CourseController {
             .then(() => res.redirect('back'))
             .catch(next);
     }
-    
+
     // [POST] /courses/handle-form-actions
     handleFormAction(req, res, next) {
-       switch(req.body.action) {
-           case 'delete':
-            Course.delete({ _id: { $in: req.body.course_id } })
-            .then(() => res.redirect('back'))
-            .catch(next);
-            break;
-           default:
-               res.json({meassage: "Action is invalid"})
-            
-       }
+        switch (req.body.action) {
+            case 'delete':
+                Course.delete({ _id: { $in: req.body.course_id } })
+                    .then(() => res.redirect('back'))
+                    .catch(next);
+                break;
+            default:
+                res.json({ meassage: "Action is invalid" })
+
+        }
     }
     // [POST] /courses/handle-form-action-trash
     handleFormActionTrash(req, res, next) {
-        switch(req.body.action) {
+        switch (req.body.action) {
             case 'restore':
-             Course.restore({ _id: { $in: req.body.course_id } })
-             .then(() => res.redirect('back'))
-             .catch(next);
+                Course.restore({ _id: { $in: req.body.course_id } })
+                    .then(() => res.redirect('back'))
+                    .catch(next);
             case 'forcedelete':
-              Course.deleteMany({ _id: { $in: req.body.course_id } })
-              .then(() => res.redirect('back'))
-              .catch(console.log('Eror'));
-             break;
+                Course.deleteMany({ _id: { $in: req.body.course_id } })
+                    .then(() => res.redirect('back'))
+                    .catch(console.log('Eror'));
+                break;
             default:
-                res.json({meassage: "Action is invalid"})
-             
+                res.json({ meassage: "Action is invalid" })
+
         }
     }
+
+    
 }
 
 module.exports = new CourseController();

@@ -1,4 +1,9 @@
+require('dotenv').config()
 const path = require('path');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo');
 const express = require('express');
 const morgan = require('morgan');
 const methodOverride = require('method-override');
@@ -6,15 +11,16 @@ const handlebars = require('express-handlebars');
 const hbtdate = require('handlebars-helper-formatdate')
 const hbs = require('hbs');
 const moment = require('moment');
+const auth = require('./lib/auth');
 
 const SortMiddleware = require('./app/middlewares/SortMiddleware')
 
 const route = require('./routes');
 const db = require('./config/db');
-const { type } = require('os');
 
 // Connect to DB
 db.connect();
+
 
 const app = express();
 const port = 3131;
@@ -26,6 +32,21 @@ app.use(
         extended: true,
     }),
 );
+
+app.use(cookieParser());
+app.use(session({
+    secret: 'very secret 12345',
+    resave: true,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: '' })
+  }));
+
+app.use(auth.initialize);
+app.use(auth.session);
+app.use(auth.setUser);
+
+
+
 app.use(express.json());
 
 app.use(methodOverride('_method'));
