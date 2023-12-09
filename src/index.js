@@ -38,7 +38,7 @@ app.use(session({
     secret: 'very secret 12345',
     resave: true,
     saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: 'mongodb+srv://course-services:zaQ%401234@cluster0.jytcw.mongodb.net/course-services?retryWrites=true&w=majority' })
+    store: MongoStore.create({ mongoUrl: '' })
   }));
 
 app.use(auth.initialize);
